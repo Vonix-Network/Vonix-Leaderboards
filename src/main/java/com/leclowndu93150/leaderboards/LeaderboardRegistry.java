@@ -79,6 +79,17 @@ public class LeaderboardRegistry {
         );
 
         LEADERBOARDS.put(
+                ResourceLocation.fromNamespaceAndPath(Leaderboards.MODID, "distance_sprinted"),
+                new Leaderboard.FromStat(
+                        ResourceLocation.fromNamespaceAndPath(Leaderboards.MODID, "distance_sprinted"),
+                        Component.translatable("leaderboard.leaderboards.distance_sprinted"),
+                        Stats.CUSTOM.get(Stats.SPRINT_ONE_CM),
+                        false,
+                        Leaderboard.FromStat.DISTANCE
+                )
+        );
+
+        LEADERBOARDS.put(
                 ResourceLocation.fromNamespaceAndPath(Leaderboards.MODID, "deaths_per_hour"),
                 new Leaderboard(
                         ResourceLocation.fromNamespaceAndPath(Leaderboards.MODID, "deaths_per_hour"),
