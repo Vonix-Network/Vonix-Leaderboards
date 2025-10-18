@@ -1,0 +1,14 @@
+{
+  "sidebar_button.leaderboards.leaderboards": "Leaderboards",
+  "sidebar_button.leaderboards.leaderboards.tooltip": "View server leaderboards",
+  "leaderboard.leaderboards.deaths": "Deaths",
+  "leaderboard.leaderboards.mob_kills": "Mob Kills",
+  "leaderboard.leaderboards.player_kills": "Player Kills",
+  "leaderboard.leaderboards.time_played": "Time Played",
+  "leaderboard.leaderboards.jumps": "Jumps",
+  "leaderboard.leaderboards.distance_walked": "Distance Walked",
+  "leaderboard.leaderboards.deaths_per_hour": "Deaths Per Hour",
+  "leaderboard.leaderboards.last_seen": "Last Seen",
+  "leaderboard.leaderboards.quest_completions": "Quest Completions",
+  "leaderboard.leaderboards.quest_completion_percentage": "Quest Completion %"
+}
