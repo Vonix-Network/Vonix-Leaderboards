@@ -1,5 +1,6 @@
 package com.leclowndu93150.leaderboards.integration;
 
+import com.leclowndu93150.leaderboards.data.PlayerStatsWrapper;
 import dev.ftb.mods.ftbquests.api.FTBQuestsAPI;
 import dev.ftb.mods.ftbquests.quest.ServerQuestFile;
 import dev.ftb.mods.ftbquests.quest.TeamData;
@@ -13,7 +14,14 @@ public class FTBQuestsIntegration {
         return ModList.get().isLoaded(FTBQUESTS_MOD_ID);
     }
 
-    public static int getPlayerQuestCompletions(ServerPlayer player) {
+    public static int getPlayerQuestCompletions(PlayerStatsWrapper player) {
+        if (!player.isOnline()) {
+            return 0;
+        }
+        return getPlayerQuestCompletionsInternal(player.getOnlinePlayer());
+    }
+
+    private static int getPlayerQuestCompletionsInternal(ServerPlayer player) {
         if (!isAvailable()) {
             return 0;
         }
@@ -61,7 +69,7 @@ public class FTBQuestsIntegration {
         }
     }
 
-    public static double getQuestCompletionPercentage(ServerPlayer player) {
+    public static double getQuestCompletionPercentage(PlayerStatsWrapper player) {
         int completed = getPlayerQuestCompletions(player);
         int total = getTotalQuestCount();
 

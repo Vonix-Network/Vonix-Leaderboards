@@ -1,6 +1,7 @@
 package com.leclowndu93150.leaderboards.network;
 
 import com.leclowndu93150.leaderboards.LeaderboardRegistry;
+import com.leclowndu93150.leaderboards.VanillaStatsRegistry;
 import com.leclowndu93150.leaderboards.data.Leaderboard;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -35,6 +36,9 @@ public record RequestLeaderboardPacket(ResourceLocation id) implements CustomPac
         context.enqueueWork(() -> {
             if (context.player() instanceof ServerPlayer serverPlayer) {
                 Leaderboard leaderboard = LeaderboardRegistry.LEADERBOARDS.get(packet.id);
+                if (leaderboard == null) {
+                    leaderboard = VanillaStatsRegistry.VANILLA_STATS.get(packet.id);
+                }
                 if (leaderboard != null) {
                     PacketDistributor.sendToPlayer(serverPlayer, new LeaderboardResponsePacket(serverPlayer, leaderboard));
                 }

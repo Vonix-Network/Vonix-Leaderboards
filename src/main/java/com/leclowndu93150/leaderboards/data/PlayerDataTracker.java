@@ -58,6 +58,10 @@ public class PlayerDataTracker extends SavedData {
         return getInstance().lastSeenTimes.getOrDefault(uuid, 0L);
     }
 
+    public java.util.Set<UUID> getAllPlayerUUIDs() {
+        return lastSeenTimes.keySet();
+    }
+
     private static PlayerDataTracker instance;
 
     public static void setInstance(PlayerDataTracker tracker) {

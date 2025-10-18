@@ -6,6 +6,8 @@ import com.leclowndu93150.leaderboards.network.*;
 import com.mojang.logging.LogUtils;
 import dev.architectury.event.EventResult;
 import dev.ftb.mods.ftblibrary.ui.CustomClickEvent;
+import net.minecraft.stats.ServerStatsCounter;
+import net.minecraft.stats.StatType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -76,5 +78,4 @@ public class Leaderboards {
         PlayerDataTracker tracker = PlayerDataTracker.get(event.getEntity().getServer().overworld());
         tracker.updateLastSeen(event.getEntity().getUUID(), event.getEntity().getServer().overworld().getGameTime());
     }
-
 }

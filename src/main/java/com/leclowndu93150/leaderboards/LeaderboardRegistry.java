@@ -157,9 +157,11 @@ public class LeaderboardRegistry {
                     )
             );
         }
+
+        VanillaStatsRegistry.register();
     }
 
-    private static double getDPH(net.minecraft.server.level.ServerPlayer player) {
+    private static double getDPH(com.leclowndu93150.leaderboards.data.PlayerStatsWrapper player) {
         int playTime = player.getStats().getValue(Stats.CUSTOM.get(Stats.PLAY_TIME));
         if (playTime > 0) {
             double hours = playTime / 72000D;

@@ -2,7 +2,10 @@ package com.leclowndu93150.leaderboards.network;
 
 import com.leclowndu93150.leaderboards.data.Leaderboard;
 import com.leclowndu93150.leaderboards.data.LeaderboardValue;
+import com.leclowndu93150.leaderboards.data.PlayerDataTracker;
+import com.leclowndu93150.leaderboards.data.PlayerStatsWrapper;
 import com.leclowndu93150.leaderboards.gui.LeaderboardScreen;
+import com.mojang.authlib.GameProfile;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -12,10 +15,16 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.ServerStatsCounter;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.level.storage.LevelResource;
+
+import java.io.File;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static com.leclowndu93150.leaderboards.Leaderboards.MODID;
 
@@ -53,18 +62,41 @@ public record LeaderboardResponsePacket(Component title, List<LeaderboardValue> 
         this(leaderboard.getTitle(), createValues(requestingPlayer, leaderboard));
     }
 
+    private static ServerStatsCounter loadPlayerStats(MinecraftServer server, UUID uuid) {
+        File statsDir = server.getWorldPath(LevelResource.PLAYER_STATS_DIR).toFile();
+        File statsFile = new File(statsDir, uuid.toString() + ".json");
+        return new ServerStatsCounter(server, statsFile);
+    }
+
     private static List<LeaderboardValue> createValues(ServerPlayer requestingPlayer, Leaderboard leaderboard) {
         List<LeaderboardValue> values = new ArrayList<>();
-        List<ServerPlayer> players = new ArrayList<>(requestingPlayer.server.getPlayerList().getPlayers());
+        List<PlayerStatsWrapper> players = new ArrayList<>();
+        
+        PlayerDataTracker tracker = PlayerDataTracker.get(requestingPlayer.server.overworld());
+        
+        for (ServerPlayer onlinePlayer : requestingPlayer.server.getPlayerList().getPlayers()) {
+            players.add(new PlayerStatsWrapper(onlinePlayer));
+        }
+        
+        tracker.getAllPlayerUUIDs().forEach(uuid -> {
+            if (requestingPlayer.server.getPlayerList().getPlayer(uuid) == null) {
+                GameProfile profile = requestingPlayer.server.getProfileCache().get(uuid).orElse(null);
+                if (profile != null) {
+                    ServerStatsCounter stats = loadPlayerStats(requestingPlayer.server, uuid);
+                    players.add(new PlayerStatsWrapper(uuid, profile, stats, requestingPlayer.server));
+                }
+            }
+        });
+        
         players.sort(leaderboard.getComparator());
 
         for (int i = 0; i < players.size(); i++) {
-            ServerPlayer player = players.get(i);
+            PlayerStatsWrapper player = players.get(i);
             LeaderboardValue value = new LeaderboardValue();
             value.username = player.getGameProfile().getName();
             value.value = leaderboard.createValue(player);
 
-            if (player == requestingPlayer) {
+            if (player.getUUID().equals(requestingPlayer.getUUID())) {
                 value.color = ChatFormatting.DARK_GREEN;
             } else if (!leaderboard.hasValidValue(player)) {
                 value.color = ChatFormatting.DARK_GRAY;

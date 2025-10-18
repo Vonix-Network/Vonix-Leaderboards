@@ -2,7 +2,6 @@ package com.leclowndu93150.leaderboards.data;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stat;
 
 import java.util.Comparator;
@@ -13,11 +12,11 @@ import java.util.function.Predicate;
 public class Leaderboard {
     public final ResourceLocation id;
     private final Component title;
-    private final Function<ServerPlayer, Component> playerToValue;
-    private final Comparator<ServerPlayer> comparator;
-    private final Predicate<ServerPlayer> validValue;
+    private final Function<PlayerStatsWrapper, Component> playerToValue;
+    private final Comparator<PlayerStatsWrapper> comparator;
+    private final Predicate<PlayerStatsWrapper> validValue;
 
-    public Leaderboard(ResourceLocation id, Component title, Function<ServerPlayer, Component> valueFunction, Comparator<ServerPlayer> comparator, Predicate<ServerPlayer> validValue) {
+    public Leaderboard(ResourceLocation id, Component title, Function<PlayerStatsWrapper, Component> valueFunction, Comparator<PlayerStatsWrapper> comparator, Predicate<PlayerStatsWrapper> validValue) {
         this.id = id;
         this.title = title;
         this.playerToValue = valueFunction;
@@ -29,15 +28,15 @@ public class Leaderboard {
         return title;
     }
 
-    public Comparator<ServerPlayer> getComparator() {
+    public Comparator<PlayerStatsWrapper> getComparator() {
         return comparator;
     }
 
-    public Component createValue(ServerPlayer player) {
+    public Component createValue(PlayerStatsWrapper player) {
         return playerToValue.apply(player);
     }
 
-    public boolean hasValidValue(ServerPlayer player) {
+    public boolean hasValidValue(PlayerStatsWrapper player) {
         return validValue.test(player);
     }
 
@@ -61,6 +60,11 @@ public class Leaderboard {
                 return Component.literal(String.format("%.2f km", blocks / 1000.0));
             }
             return Component.literal(String.format("%.1f m", blocks));
+        };
+        public static final IntFunction<Component> DAMAGE = value -> {
+            if (value <= 0) return Component.literal("0");
+            double damage = value / 10.0;
+            return Component.literal(String.format("%.1f", damage));
         };
 
         public FromStat(ResourceLocation id, Component title, Stat<?> stat, boolean ascending, IntFunction<Component> valueFormatter) {
