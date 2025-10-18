@@ -118,10 +118,13 @@ public record LeaderboardResponsePacket(Component title, List<LeaderboardValue> 
     }
 
     public static void handle(LeaderboardResponsePacket packet, IPayloadContext context) {
-        context.enqueueWork(() -> {
-            Minecraft.getInstance().execute(() -> {
-                new LeaderboardScreen(packet.title, packet.values).openGui();
+        if (context.flow().isClientbound()) {
+            context.enqueueWork(() -> {
+                Minecraft.getInstance().execute(() -> {
+                    LeaderboardScreen screen = new LeaderboardScreen(packet.title, packet.values);
+                    screen.openGui();
+                });
             });
-        });
+        }
     }
 }

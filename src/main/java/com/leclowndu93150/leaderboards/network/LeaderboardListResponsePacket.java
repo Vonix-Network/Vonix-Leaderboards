@@ -55,10 +55,13 @@ public record LeaderboardListResponsePacket(Map<ResourceLocation, Component> lea
     }
 
     public static void handle(LeaderboardListResponsePacket packet, IPayloadContext context) {
-        context.enqueueWork(() -> {
-            Minecraft.getInstance().execute(() -> {
-                new LeaderboardListScreen(packet.leaderboards).openGui();
+        if (context.flow().isClientbound()) {
+            context.enqueueWork(() -> {
+                Minecraft.getInstance().execute(() -> {
+                    LeaderboardListScreen screen = new LeaderboardListScreen(packet.leaderboards);
+                    screen.openGui();
+                });
             });
-        });
+        }
     }
 }

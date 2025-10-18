@@ -1,13 +1,8 @@
 package com.leclowndu93150.leaderboards;
 
-import com.leclowndu93150.leaderboards.client.LeaderboardsClient;
 import com.leclowndu93150.leaderboards.data.PlayerDataTracker;
 import com.leclowndu93150.leaderboards.network.*;
 import com.mojang.logging.LogUtils;
-import dev.architectury.event.EventResult;
-import dev.ftb.mods.ftblibrary.ui.CustomClickEvent;
-import net.minecraft.stats.ServerStatsCounter;
-import net.minecraft.stats.StatType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -35,18 +30,8 @@ public class Leaderboards {
         NeoForge.EVENT_BUS.addListener(this::onPlayerLogout);
         
         if (FMLEnvironment.dist == Dist.CLIENT) {
-            initClient();
+            com.leclowndu93150.leaderboards.client.LeaderboardsClientEvents.init();
         }
-    }
-
-    private void initClient() {
-        CustomClickEvent.EVENT.register(event -> {
-            if (event.id().getNamespace().equals(MODID) && "open_leaderboards".equals(event.id().getPath())) {
-                LeaderboardsClient.openLeaderboardsList();
-                return EventResult.interruptFalse();
-            }
-            return EventResult.pass();
-        });
     }
 
     private void registerPayloads(final RegisterPayloadHandlersEvent event) {
