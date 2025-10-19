@@ -2,6 +2,7 @@ package com.leclowndu93150.leaderboards.gui;
 
 import com.leclowndu93150.leaderboards.data.LeaderboardValue;
 import dev.ftb.mods.ftblibrary.ui.*;
+import dev.ftb.mods.ftblibrary.ui.misc.ButtonListBaseScreen;
 import dev.ftb.mods.ftblibrary.util.TooltipList;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -10,7 +11,7 @@ import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
-public class LeaderboardScreen extends dev.ftb.mods.ftblibrary.ui.misc.ButtonListBaseScreen {
+public class LeaderboardScreen extends ButtonListBaseScreen {
     private final List<LeaderboardValue> leaderboard;
     private int rankSize;
     private int usernameSize;
