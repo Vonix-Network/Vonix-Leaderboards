@@ -1,6 +1,6 @@
 # Developer Documentation
 
-This document provides detailed information for developers who want to build, modify, or contribute to the Vonix Leaderboards mod.
+This document provides detailed information for developers who want to build, modify, or contribute to the Leaderboards mod.
 
 ## Table of Contents
 
@@ -25,7 +25,7 @@ This document provides detailed information for developers who want to build, mo
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd Vonix-Leaderboards
+cd Leaderboards
 
 # On Windows
 gradlew.bat setupDecompWorkspace
@@ -93,7 +93,7 @@ gradlew.bat runClient --debug-jvm
 ## Project Structure
 
 ```
-Vonix-Leaderboards/
+Leaderboards/
 ├── src/
 │   └── main/
 │       ├── java/com/leclowndu93150/leaderboards/

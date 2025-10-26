@@ -29,7 +29,7 @@ A comprehensive Minecraft mod for tracking and displaying player statistics thro
 - Control CORS settings
 - Specify allowed origins for cross-origin requests
 
-## Installation
+## S
 
 1. Download the mod JAR file from the releases page
 2. Place the JAR in your Minecraft server's `mods` folder

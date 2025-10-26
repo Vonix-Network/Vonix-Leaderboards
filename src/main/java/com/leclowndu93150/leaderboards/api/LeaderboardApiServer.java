@@ -33,14 +33,12 @@ public class LeaderboardApiServer {
     private final HttpServer server;
     private final MinecraftServer mcServer;
     private final int port;
-    private final boolean corsEnabled;
-    private final String allowedOrigins;
+    private final String apiKey;
     
-    private LeaderboardApiServer(MinecraftServer mcServer, int port, boolean corsEnabled, String allowedOrigins) throws IOException {
+    private LeaderboardApiServer(MinecraftServer mcServer, int port, String apiKey) throws IOException {
         this.mcServer = mcServer;
         this.port = port;
-        this.corsEnabled = corsEnabled;
-        this.allowedOrigins = allowedOrigins;
+        this.apiKey = apiKey;
         this.server = HttpServer.create(new InetSocketAddress(port), 0);
         
         // Set up endpoints
@@ -52,16 +50,20 @@ public class LeaderboardApiServer {
         LOGGER.info("Leaderboard API Server initialized on port {}", port);
     }
     
-    public static void start(MinecraftServer mcServer, int port, boolean corsEnabled, String allowedOrigins) {
+    public static void start(MinecraftServer mcServer, int port, String apiKey) {
         if (instance != null) {
             LOGGER.warn("API Server already running, stopping previous instance");
             stop();
         }
         
         try {
-            instance = new LeaderboardApiServer(mcServer, port, corsEnabled, allowedOrigins);
+            instance = new LeaderboardApiServer(mcServer, port, apiKey);
             instance.server.start();
-            LOGGER.info("Leaderboard API Server started successfully on port {} (CORS: {})", port, corsEnabled ? "enabled" : "disabled");
+            if (apiKey == null || apiKey.isEmpty()) {
+                LOGGER.warn("Leaderboard API Server started on port {} WITHOUT authentication - not recommended for public servers!", port);
+            } else {
+                LOGGER.info("Leaderboard API Server started successfully on port {} with API key authentication", port);
+            }
         } catch (IOException e) {
             LOGGER.error("Failed to start Leaderboard API Server", e);
         }
@@ -81,6 +83,10 @@ public class LeaderboardApiServer {
             return;
         }
         
+        if (!checkAuthentication(exchange)) {
+            return;
+        }
+        
         List<LeaderboardInfo> leaderboards = LeaderboardRegistry.LEADERBOARDS.entrySet().stream()
                 .map(entry -> new LeaderboardInfo(
                         entry.getKey().toString(),
@@ -95,6 +101,10 @@ public class LeaderboardApiServer {
     private void handleGetPlayer(HttpExchange exchange) throws IOException {
         if (!"GET".equals(exchange.getRequestMethod())) {
             sendResponse(exchange, 405, "{\"error\": \"Method not allowed\"}");
+            return;
+        }
+        
+        if (!checkAuthentication(exchange)) {
             return;
         }
         
@@ -174,6 +184,10 @@ public class LeaderboardApiServer {
             return;
         }
         
+        if (!checkAuthentication(exchange)) {
+            return;
+        }
+        
         String path = exchange.getRequestURI().getPath();
         String leaderboardId = path.substring("/api/leaderboard/".length());
         
@@ -247,8 +261,18 @@ public class LeaderboardApiServer {
                         Optional<GameProfile> profile = profileCache.get(uuid);
                         
                         if (profile.isPresent()) {
-                            File statsFile = new File(statsDir, fileName);
-                            ServerStatsCounter stats = new ServerStatsCounter(mcServer, statsFile);
+                            ServerStatsCounter stats;
+                            
+                            // Check if player is online - use live stats
+                            var onlinePlayer = mcServer.getPlayerList().getPlayer(uuid);
+                            if (onlinePlayer != null) {
+                                // Player is online - use their live stats from memory
+                                stats = mcServer.getPlayerList().getPlayerStats(onlinePlayer);
+                            } else {
+                                // Player is offline - read from disk
+                                File statsFile = new File(statsDir, fileName);
+                                stats = new ServerStatsCounter(mcServer, statsFile);
+                            }
                             
                             players.add(new PlayerStatsWrapper(uuid, profile.get(), stats, mcServer));
                         }
@@ -262,16 +286,35 @@ public class LeaderboardApiServer {
         return players;
     }
     
+    private boolean checkAuthentication(HttpExchange exchange) throws IOException {
+        // If no API key is configured, allow all requests
+        if (apiKey == null || apiKey.isEmpty()) {
+            return true;
+        }
+        
+        // Check for X-API-Key header
+        String providedKey = exchange.getRequestHeaders().getFirst("X-API-Key");
+        if (providedKey == null || !providedKey.equals(apiKey)) {
+            sendResponse(exchange, 401, "{\"error\": \"Unauthorized - Invalid or missing X-API-Key header\"}");
+            return false;
+        }
+        
+        return true;
+    }
+    
     private void sendResponse(HttpExchange exchange, int statusCode, String response) throws IOException {
         // Set content type
         exchange.getResponseHeaders().set("Content-Type", "application/json");
         
-        // Add CORS headers if enabled
-        if (corsEnabled) {
-            exchange.getResponseHeaders().set("Access-Control-Allow-Origin", allowedOrigins);
-            exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, OPTIONS");
-            exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type");
-        }
+        // Add CORS headers (allow all origins for simplicity)
+        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, OPTIONS");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, X-API-Key");
+        
+        // Prevent caching - always return fresh data
+        exchange.getResponseHeaders().set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+        exchange.getResponseHeaders().set("Pragma", "no-cache");
+        exchange.getResponseHeaders().set("Expires", "0");
         
         byte[] bytes = response.getBytes();
         exchange.sendResponseHeaders(statusCode, bytes.length);

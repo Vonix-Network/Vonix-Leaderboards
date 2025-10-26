@@ -61,9 +61,8 @@ public class Leaderboards {
         // Start the API server if enabled
         if (LeaderboardConfig.ENABLE_API.get()) {
             int port = LeaderboardConfig.API_PORT.get();
-            boolean corsEnabled = LeaderboardConfig.API_CORS_ENABLED.get();
-            String allowedOrigins = LeaderboardConfig.API_ALLOWED_ORIGINS.get();
-            LeaderboardApiServer.start(event.getServer(), port, corsEnabled, allowedOrigins);
+            String apiKey = LeaderboardConfig.API_KEY.get();
+            LeaderboardApiServer.start(event.getServer(), port, apiKey);
         } else {
             LOGGER.info("Leaderboard API server is disabled in config");
         }
