@@ -159,6 +159,9 @@ public class LeaderboardRegistry {
         }
 
         VanillaStatsRegistry.register();
+        
+        // Add all vanilla stats to the main leaderboards map for API access
+        LEADERBOARDS.putAll(VanillaStatsRegistry.VANILLA_STATS);
     }
 
     private static double getDPH(com.leclowndu93150.leaderboards.data.PlayerStatsWrapper player) {

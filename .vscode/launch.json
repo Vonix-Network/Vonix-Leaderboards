@@ -1,0 +1,93 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "Client",
+      "presentation": {
+        "group": "Mod Development - Vonix-Leaderboards",
+        "order": 0
+      },
+      "projectName": "Vonix-Leaderboards",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\rwcoo\\Leaderboars\\Vonix-Leaderboards\\build\\moddev\\clientRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\rwcoo\\Leaderboars\\Vonix-Leaderboards\\build\\moddev\\clientRunVmArgs.txt",
+        "-Dfml.modFolders\u003dleaderboards%%C:\\Users\\rwcoo\\Leaderboars\\Vonix-Leaderboards\\bin\\main"
+      ],
+      "cwd": "${workspaceFolder}\\run",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "Data",
+      "presentation": {
+        "group": "Mod Development - Vonix-Leaderboards",
+        "order": 1
+      },
+      "projectName": "Vonix-Leaderboards",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\rwcoo\\Leaderboars\\Vonix-Leaderboards\\build\\moddev\\dataRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\rwcoo\\Leaderboars\\Vonix-Leaderboards\\build\\moddev\\dataRunVmArgs.txt",
+        "-Dfml.modFolders\u003dleaderboards%%C:\\Users\\rwcoo\\Leaderboars\\Vonix-Leaderboards\\bin\\main"
+      ],
+      "cwd": "${workspaceFolder}\\run",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "GameTestServer",
+      "presentation": {
+        "group": "Mod Development - Vonix-Leaderboards",
+        "order": 2
+      },
+      "projectName": "Vonix-Leaderboards",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\rwcoo\\Leaderboars\\Vonix-Leaderboards\\build\\moddev\\gameTestServerRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\rwcoo\\Leaderboars\\Vonix-Leaderboards\\build\\moddev\\gameTestServerRunVmArgs.txt",
+        "-Dfml.modFolders\u003dleaderboards%%C:\\Users\\rwcoo\\Leaderboars\\Vonix-Leaderboards\\bin\\main"
+      ],
+      "cwd": "${workspaceFolder}\\run",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "Server",
+      "presentation": {
+        "group": "Mod Development - Vonix-Leaderboards",
+        "order": 3
+      },
+      "projectName": "Vonix-Leaderboards",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\rwcoo\\Leaderboars\\Vonix-Leaderboards\\build\\moddev\\serverRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\rwcoo\\Leaderboars\\Vonix-Leaderboards\\build\\moddev\\serverRunVmArgs.txt",
+        "-Dfml.modFolders\u003dleaderboards%%C:\\Users\\rwcoo\\Leaderboars\\Vonix-Leaderboards\\bin\\main"
+      ],
+      "cwd": "${workspaceFolder}\\run",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    }
+  ]
+}

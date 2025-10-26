@@ -1,0 +1,37 @@
+# Vonix Leaderboards Configuration
+# This file will be automatically generated in config/leaderboards-server.toml
+# after the first server start.
+
+["API Settings"]
+	# Enable the HTTP API server for external access to leaderboard data
+	enableApi = true
+	
+	# Port for the API server to listen on
+	# Range: 1024 to 65535
+	# Default: 8080
+	apiPort = 8080
+	
+	# Enable CORS (Cross-Origin Resource Sharing) headers
+	# Set to true to allow web browsers to access the API from different domains
+	# Default: true
+	corsEnabled = true
+	
+	# Allowed origins for CORS
+	# Use '*' to allow all origins (development only)
+	# For production, specify exact domains: "https://example.com,https://other.com"
+	# Default: "*"
+	allowedOrigins = "*"
+
+# Example production configuration:
+# ["API Settings"]
+# 	enableApi = true
+# 	apiPort = 8080
+# 	corsEnabled = true
+# 	allowedOrigins = "https://myserver.com,https://stats.myserver.com"
+
+# Example to disable the API:
+# ["API Settings"]
+# 	enableApi = false
+# 	apiPort = 8080
+# 	corsEnabled = true
+# 	allowedOrigins = "*"
