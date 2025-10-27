@@ -57,8 +57,7 @@ public class Leaderboards {
     private void onServerStarted(ServerStartedEvent event) {
         PlayerDataTracker tracker = PlayerDataTracker.get(event.getServer().overworld());
         PlayerDataTracker.setInstance(tracker);
-        
-        // Start the API server if enabled
+
         if (LeaderboardConfig.ENABLE_API.get()) {
             int port = LeaderboardConfig.API_PORT.get();
             String apiKey = LeaderboardConfig.API_KEY.get();

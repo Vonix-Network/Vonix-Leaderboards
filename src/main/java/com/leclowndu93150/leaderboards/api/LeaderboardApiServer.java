@@ -41,7 +41,6 @@ public class LeaderboardApiServer {
         this.apiKey = apiKey;
         this.server = HttpServer.create(new InetSocketAddress(port), 0);
         
-        // Set up endpoints
         server.createContext("/api/leaderboards", this::handleListLeaderboards);
         server.createContext("/api/leaderboard/", this::handleGetLeaderboard);
         server.createContext("/api/player/", this::handleGetPlayer);
@@ -116,10 +115,8 @@ public class LeaderboardApiServer {
             return;
         }
         
-        // Get all players
         List<PlayerStatsWrapper> allPlayers = getAllPlayers();
-        
-        // Find the specific player
+
         PlayerStatsWrapper targetPlayer = allPlayers.stream()
                 .filter(p -> p.name.equalsIgnoreCase(playerName))
                 .findFirst()
@@ -130,24 +127,20 @@ public class LeaderboardApiServer {
             return;
         }
         
-        // Build player stats across all leaderboards
         List<PlayerLeaderboardEntry> leaderboardStats = new ArrayList<>();
-        
+
         for (Map.Entry<ResourceLocation, Leaderboard> entry : LeaderboardRegistry.LEADERBOARDS.entrySet()) {
             Leaderboard leaderboard = entry.getValue();
-            
-            // Check if player has valid data for this leaderboard
+
             if (!leaderboard.hasValidValue(targetPlayer)) {
                 continue;
             }
             
-            // Get all players for this leaderboard and sort
             List<PlayerStatsWrapper> validPlayers = allPlayers.stream()
                     .filter(leaderboard::hasValidValue)
                     .sorted(leaderboard.getComparator())
                     .collect(Collectors.toList());
             
-            // Find player's rank
             int rank = -1;
             for (int i = 0; i < validPlayers.size(); i++) {
                 if (validPlayers.get(i).uuid.equals(targetPlayer.uuid)) {
@@ -210,16 +203,13 @@ public class LeaderboardApiServer {
             return;
         }
         
-        // Get player data
         List<PlayerStatsWrapper> players = getAllPlayers();
-        
-        // Filter and sort players
+
         List<PlayerStatsWrapper> validPlayers = players.stream()
                 .filter(leaderboard::hasValidValue)
                 .sorted(leaderboard.getComparator())
                 .collect(Collectors.toList());
         
-        // Build response
         List<LeaderboardEntry> entries = new ArrayList<>();
         for (int i = 0; i < validPlayers.size(); i++) {
             PlayerStatsWrapper player = validPlayers.get(i);
@@ -249,7 +239,6 @@ public class LeaderboardApiServer {
             return players;
         }
         
-        // Get all stored player stats
         File statsDir = mcServer.getWorldPath(LevelResource.PLAYER_STATS_DIR).toFile();
         String[] statsFiles = statsDir.list();
         
@@ -263,13 +252,10 @@ public class LeaderboardApiServer {
                         if (profile.isPresent()) {
                             ServerStatsCounter stats;
                             
-                            // Check if player is online - use live stats
                             var onlinePlayer = mcServer.getPlayerList().getPlayer(uuid);
                             if (onlinePlayer != null) {
-                                // Player is online - use their live stats from memory
                                 stats = mcServer.getPlayerList().getPlayerStats(onlinePlayer);
                             } else {
-                                // Player is offline - read from disk
                                 File statsFile = new File(statsDir, fileName);
                                 stats = new ServerStatsCounter(mcServer, statsFile);
                             }
@@ -277,7 +263,6 @@ public class LeaderboardApiServer {
                             players.add(new PlayerStatsWrapper(uuid, profile.get(), stats, mcServer));
                         }
                     } catch (Exception e) {
-                        // Skip invalid files
                     }
                 }
             }
@@ -287,12 +272,10 @@ public class LeaderboardApiServer {
     }
     
     private boolean checkAuthentication(HttpExchange exchange) throws IOException {
-        // If no API key is configured, allow all requests
         if (apiKey == null || apiKey.isEmpty()) {
             return true;
         }
         
-        // Check for X-API-Key header
         String providedKey = exchange.getRequestHeaders().getFirst("X-API-Key");
         if (providedKey == null || !providedKey.equals(apiKey)) {
             sendResponse(exchange, 401, "{\"error\": \"Unauthorized - Invalid or missing X-API-Key header\"}");
@@ -303,19 +286,16 @@ public class LeaderboardApiServer {
     }
     
     private void sendResponse(HttpExchange exchange, int statusCode, String response) throws IOException {
-        // Set content type
         exchange.getResponseHeaders().set("Content-Type", "application/json");
-        
-        // Add CORS headers (allow all origins for simplicity)
+
         exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
         exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, OPTIONS");
         exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, X-API-Key");
-        
-        // Prevent caching - always return fresh data
+
         exchange.getResponseHeaders().set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
         exchange.getResponseHeaders().set("Pragma", "no-cache");
         exchange.getResponseHeaders().set("Expires", "0");
-        
+
         byte[] bytes = response.getBytes();
         exchange.sendResponseHeaders(statusCode, bytes.length);
         
@@ -324,7 +304,6 @@ public class LeaderboardApiServer {
         }
     }
     
-    // Inner classes for JSON serialization
     private static class LeaderboardInfo {
         private final String id;
         private final String name;

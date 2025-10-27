@@ -6,7 +6,6 @@ public class LeaderboardConfig {
     public static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
     public static final ModConfigSpec SPEC;
 
-    // API Settings
     public static final ModConfigSpec.BooleanValue ENABLE_API;
     public static final ModConfigSpec.IntValue API_PORT;
     public static final ModConfigSpec.ConfigValue<String> API_KEY;
